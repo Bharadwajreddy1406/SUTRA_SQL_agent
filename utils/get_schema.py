@@ -66,7 +66,6 @@ def get_schema() -> Dict[str, List[Dict[str, Any]]]:
         print(f"Error: {e}")
         return {}
 
-
 def main():
     schema_info = get_schema()
     if schema_info:
