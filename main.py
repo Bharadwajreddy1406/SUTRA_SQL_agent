@@ -1,42 +1,23 @@
-import psycopg2
+from langchain_community.utilities import SQLDatabase
+from langchain_openai import ChatOpenAI
+from langchain_community.agent_toolkits import SQLDatabaseToolkit, create_sql_agent
 
-# Establish a connection to the PostgreSQL database
-conn = psycopg2.connect(
-    dbname='SkillSage',
-    user='postgres',
-    password='reddy1406',
-    host='localhost',
-    port='5432'
-)
 
-# Create a cursor object to interact with the database
-cur = conn.cursor()
+# Replace with your PostgreSQL connection details
+db = SQLDatabase.from_uri("postgresql://postgres:reddy1406@localhost/SkillSage_niceone")
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, api_key="sk-proj-WzASEx9XPHuZgVUFyXZ3T3BlbkFJYiMP1pBoTxLY1TaWaPTa" )
 
-# Query to retrieve table names from the public schema
-cur.execute("""
-    SELECT table_name
-    FROM information_schema.tables
-    WHERE table_schema = 'public'
-""")
-tables = cur.fetchall()
 
-# Iterate over each table and retrieve column information
-for table in tables:
-    table_name = table[0]
-    print(f"Table: {table_name}")
 
-    # Query to retrieve column details for the current table
-    cur.execute(f"""
-        SELECT column_name, data_type
-        FROM information_schema.columns
-        WHERE table_name = '{table_name}'
-    """)
-    columns = cur.fetchall()
+toolkit = SQLDatabaseToolkit(db=db, llm=llm)
+agent_executor = create_sql_agent(llm=llm, toolkit=toolkit, verbose=True)
 
-    for column in columns:
-        column_name, data_type = column
-        print(f"    Column: {column_name}, Data Type: {data_type}")
 
-# Close the cursor and connection
-cur.close()
-conn.close()
+# Define your natural language query
+user_query = "list the "
+
+# Execute the query using the agent
+result = agent_executor.invoke(user_query)
+
+# Output the result
+print(result)
