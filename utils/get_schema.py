@@ -1,6 +1,11 @@
 import psycopg2
 import json
+import os
 from typing import Dict, List, Any
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 def get_schema() -> Dict[str, List[Dict[str, Any]]]:
     """
@@ -10,11 +15,11 @@ def get_schema() -> Dict[str, List[Dict[str, Any]]]:
     try:
         # Establish a connection to the PostgreSQL database
         conn = psycopg2.connect(
-            dbname='SkillSage_niceone',
-            user='postgres',
-            password='reddy1406',
-            host='localhost',
-            port='5432'
+            dbname=os.getenv('DB_NAME'),
+            user=os.getenv('DB_USER'),
+            password=os.getenv('DB_PASSWORD'),
+            host=os.getenv('DB_HOST'),
+            port=os.getenv('DB_PORT')
         )
 
         # Create a cursor object to interact with the database
