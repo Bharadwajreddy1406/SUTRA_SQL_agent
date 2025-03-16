@@ -14,7 +14,7 @@ llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, api_key=os.getenv("OPENAI
 toolkit = SQLDatabaseToolkit(db=db, llm=llm)
 agent_executor = create_sql_agent(llm=llm, toolkit=toolkit, verbose=True)
 
-user_query = "list the "
+user_query = input("Enter your query: ")
 
 
 result = agent_executor.invoke(user_query)
